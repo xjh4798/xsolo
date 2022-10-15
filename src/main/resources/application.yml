@@ -1,0 +1,15 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:mysql://120.46.210.169:3306/syc?&useSSL=true&useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
+    username: root
+    password: Xjh5232573
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+
+mybatis:
+  type-aliases-package: com.xjh.sych.pojo
+  mapper-locations: classpath:mybatis/mapper/*.xml

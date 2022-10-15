@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xjh.sych.mapper.PersonMapper">
+    <select id="findAll" resultType="person">
+        select * from persons
+    </select>
+
+    <insert id="addPerson" useGeneratedKeys="true" keyProperty="pid" parameterType="person">
+        insert into persons (fid, name, sex, label, carid, phone, `dec`)
+        values (#{fid},#{name},#{sex},#{label},#{carid},#{phone},#{dec});
+    </insert>
+
+    <select id="findPerson" resultType="person">
+        select pid,fid, name, sex, label, carid, phone, `dec` from persons
+        where pid = #{pid}
+    </select>
+
+
+
+</mapper>

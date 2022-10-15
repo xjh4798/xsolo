@@ -7,92 +7,76 @@
         4.0.0
     </modelVersion>
     <parent>
-        <groupId>
-            org.springframework.boot
-        </groupId>
-        <artifactId>
-            spring-boot-starter-parent
-        </artifactId>
-        <version>
-            2.7.4
-        </version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>
-        com.xsolo
-    </groupId>
-    <artifactId>
-        xsolo
-    </artifactId>
-    <version>
-        0.0.1-SNAPSHOT
-    </version>
-    <name>
-        xsolo
-    </name>
-    <description>
-        xsolo
-    </description>
+
+    <groupId>com.xsolo</groupId>
+    <artifactId>xsolo</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>xsolo</name>
+    <description>xsolo</description>
     <properties>
-        <java.version>
-            1.8
-        </java.version>
+        <java.version>1.8</java.version>
     </properties>
     <dependencies>
+        <!--连接数据库-->
         <dependency>
-            <groupId>
-                org.springframework.boot
-            </groupId>
-            <artifactId>
-                spring-boot-starter-jdbc
-            </artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
         <dependency>
-            <groupId>
-                org.springframework.boot
-            </groupId>
-            <artifactId>
-                spring-boot-starter-web
-            </artifactId>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.30</version>
+        </dependency>
+        <!--mybatis-->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>2.2.2</version>
         </dependency>
 
+        <!--web-->
         <dependency>
-            <groupId>
-                org.springframework.boot
-            </groupId>
-            <artifactId>
-                spring-boot-configuration-processor
-            </artifactId>
-            <optional>
-                true
-            </optional>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <!--工具 yml提示-->
         <dependency>
-            <groupId>
-                org.projectlombok
-            </groupId>
-            <artifactId>
-                lombok
-            </artifactId>
-            <optional>
-                true
-            </optional>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
         </dependency>
+        <!--lombok-->
         <dependency>
-            <groupId>
-                org.springframework.boot
-            </groupId>
-            <artifactId>
-                spring-boot-starter-test
-            </artifactId>
-            <scope>
-                test
-            </scope>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!--springboot测试-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!--Gson 处理json-->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.9.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <!--spring boot打包插件-->
             <plugin>
                 <groupId>
                     org.springframework.boot
@@ -112,6 +96,54 @@
                         </exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+
+            <!--镜像打包插件与配置-->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>1.2.2</version>
+                <configuration>
+                    <!--指定镜像名称-->
+                    <imageName>${project.artifactId}</imageName>
+                    <!--指定dockerfile在哪（在pom中指定了配置就不需要写了）-->
+                    <!--                    <dockerDirectory>src/main/resources</dockerDirectory>-->
+                    <!--指定标签-->
+                    <imageTags>
+                        <imageTag>1.0.1</imageTag>
+                    </imageTags>
+                    <!--连接服务器上的docker-->
+                    <!--<dockerHost>http://120.46.210.169:2375</dockerHost>-->
+                    <dockerHost>https://xjh:2375</dockerHost>
+                    <!-- 指定tls证书的目录 -->
+                    <dockerCertPath>K:\javaide\xjh</dockerCertPath>
+                    <!--基础镜像jdk1.8-->
+                    <baseImage>openjdk:8-jdk-alpine</baseImage>
+                    <!--制作者提供本人信息-->
+                    <maintainer>xinyewen6@gmail.com</maintainer>
+                    <!--切换到ROOT目录-->
+                    <workdir>/ROOT</workdir>
+                    <cmd>["java","-version"]</cmd>
+                    <entryPoint>["java","-jar","${project.build.finalName}.jar"]</entryPoint>
+                    <!--这里是复制jar包到docker容器指定目录配置-->
+                    <resources>
+                        <resource>
+                            <targetPath>/ROOT</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                </configuration>
+                <executions>
+                    <!--打包阶段构建镜像-->
+                    <execution>
+                        <id>build-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
